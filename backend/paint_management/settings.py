@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$6p3obzb-f(hpi&7bn=#!g-l*wfda*(l&u-g2a9ra**jcz1ht0'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-$6p3obzb-f(hpi&7bn=#!g-l*wfda*(l&u-g2a9ra**jcz1ht0')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # Railway will handle this
 
 
 # Application definition
@@ -79,12 +81,28 @@ WSGI_APPLICATION = 'paint_management.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Настройки базы данных для Railway MySQL
+DATABASE_URL = os.environ.get('DATABASE_URL', 'mysql://root:ZPSlrmSKgYSbbKsvSMwHMjVeZEqtBrBT@gondola.proxy.rlwy.net:55502/railway')
+
+if DATABASE_URL and DATABASE_URL.startswith('mysql://'):
+    # Конфигурация для MySQL (Railway)
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600, conn_health_checks=True)
     }
-}
+    # Настройки для MySQL
+    DATABASES['default']['OPTIONS'] = {
+        'charset': 'utf8mb4',
+        'use_unicode': True,
+        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+    }
+else:
+    # Fallback к SQLite для локальной разработки
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
