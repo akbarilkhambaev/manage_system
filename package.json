@@ -1,0 +1,29 @@
+{
+  "name": "paint-management-system",
+  "version": "1.0.0",
+  "description": "Paint Management System with Django Backend and Next.js Frontend",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python manage.py runserver",
+    "build:frontend": "cd frontend && npm run build",
+    "install:frontend": "cd frontend && npm install",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:backend": "docker build -f Dockerfile.backend -t paint-backend .",
+    "docker:frontend": "docker build -f Dockerfile.frontend -t paint-frontend ."
+  },
+  "keywords": [
+    "django",
+    "nextjs",
+    "paint-management",
+    "analytics"
+  ],
+  "author": "Paint Management Team",
+  "license": "MIT"
+}
